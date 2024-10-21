@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { fromError } from "zod-validation-error";
 
 const EnvironmentConfigurationSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]),
@@ -13,7 +14,9 @@ export type EnvironmentConfiguration = z.infer<
 const parsedEnv = EnvironmentConfigurationSchema.safeParse(process.env);
 
 if (!parsedEnv.success) {
-  throw new Error(`Invalid environment variables: ${parsedEnv.error.message}`);
+  throw new Error(
+    `Invalid environment variables: ${fromError(parsedEnv.error).message}`,
+  );
 }
 
 export const env = parsedEnv.data;
