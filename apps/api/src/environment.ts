@@ -8,6 +8,8 @@ const EnvironmentConfigurationSchema = z.object({
   JWT_SECRET: z.string(),
   REDIS_ORDERBOOK_IP: z.string(),
   REDIS_ORDERBOOK_PORT: z.coerce.number().min(1).max(65535),
+  REDIS_ORDERBOOK_SUBSCRIBER_IP: z.string(),
+  REDIS_ORDERBOOK_SUBSCRIBER_PORT: z.coerce.number().min(1).max(65535),
 });
 
 export type EnvironmentConfiguration = z.infer<
