@@ -81,21 +81,9 @@ importers:
       '@repo/logger':
         specifier: workspace:*
         version: link:../../packages/logger
-      body-parser:
-        specifier: ^1.20.2
-        version: 1.20.3
-      cors:
-        specifier: ^2.8.5
-        version: 2.8.5
       dotenv:
         specifier: ^16.4.7
         version: 16.4.7
-      express:
-        specifier: ^4.18.3
-        version: 4.21.2
-      morgan:
-        specifier: ^1.10.0
-        version: 1.10.0
       redis:
         specifier: ^4.7.0
         version: 4.7.0
@@ -112,18 +100,6 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../packages/config-typescript
-      '@types/body-parser':
-        specifier: ^1.19.5
-        version: 1.19.5
-      '@types/cors':
-        specifier: ^2.8.17
-        version: 2.8.17
-      '@types/express':
-        specifier: ^4.17.21
-        version: 4.17.21
-      '@types/morgan':
-        specifier: ^1.9.9
-        version: 1.9.9
       '@types/node':
         specifier: ^20.11.24
         version: 20.17.10
