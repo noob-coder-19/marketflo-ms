@@ -10,6 +10,7 @@ const EnvironmentConfigurationSchema = z.object({
   REDIS_ORDERBOOK_SUBSCRIBER_PORT: z.coerce.number().min(1).max(65535),
   REDIS_ORDERBOOK_WEBSOCKET_IP: z.string(),
   REDIS_ORDERBOOK_WEBSOCKET_PORT: z.coerce.number().min(1).max(65535),
+  BASE_CURRENCY: z.string(),
 });
 
 export type EnvironmentConfiguration = z.infer<
