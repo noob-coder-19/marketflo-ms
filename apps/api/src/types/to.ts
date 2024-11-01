@@ -1,4 +1,9 @@
-import type { CreateOrderRequest } from "../models/orders";
+import type {
+  CancelOrderRequest,
+  CreateOrderRequest,
+  GetOpenOrdersRequest,
+  OnRampRequest,
+} from "../models/orders";
 import type {
   CANCEL_ORDER,
   CREATE_ORDER,
@@ -15,18 +20,11 @@ export type MessageToEngine =
     }
   | {
       type: typeof CANCEL_ORDER;
-      data: {
-        orderId: string;
-        market: string;
-      };
+      data: CancelOrderRequest;
     }
   | {
       type: typeof ON_RAMP;
-      data: {
-        amount: string;
-        userId: string;
-        txnId: string;
-      };
+      data: OnRampRequest;
     }
   | {
       type: typeof GET_DEPTH;
@@ -36,8 +34,5 @@ export type MessageToEngine =
     }
   | {
       type: typeof GET_OPEN_ORDERS;
-      data: {
-        userId: string;
-        market: string;
-      };
+      data: GetOpenOrdersRequest;
     };
