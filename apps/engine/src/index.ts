@@ -2,6 +2,8 @@
 import { log } from "@repo/logger";
 import "./environment";
 import { RedisClient } from "./clients/redis";
+import { Engine } from "./trade/engine";
+import type { MessageFromEngine } from "./types/requests";
 
 const main = async (): Promise<void> => {
   const redis = RedisClient.getInstance();
@@ -9,6 +11,7 @@ const main = async (): Promise<void> => {
 
   const subscriberClient = redis.getSubscriberClient();
   const publisherClient = redis.getPublisherClient();
+  const engineClient = new Engine();
 
   log("Connected to Redis");
 
@@ -16,25 +19,14 @@ const main = async (): Promise<void> => {
   while (true) {
     try {
       // eslint-disable-next-line no-await-in-loop -- purposeful
-      const response = await subscriberClient.rPop("messages");
-      if (!response) continue;
+      const request = await subscriberClient.rPop("messages");
+      if (!request) continue;
 
-      const data = JSON.parse(response);
-      log(data);
+      const data: MessageFromEngine = JSON.parse(request);
+      const response = engineClient.process(data.message);
 
       // eslint-disable-next-line no-await-in-loop -- purposeful
-      await publisherClient.publish(
-        data.clientId,
-        JSON.stringify({
-          type: "ORDER_PLACED",
-          payload: {
-            orderId: "3422344",
-            executedQty: "0",
-            fills: [],
-            userId: data.message.userId,
-          },
-        }),
-      );
+      await publisherClient.publish(data.clientId, JSON.stringify(response));
 
       log("Message sent");
     } catch (err) {
