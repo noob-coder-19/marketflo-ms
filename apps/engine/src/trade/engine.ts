@@ -166,14 +166,6 @@ export class Engine {
     };
 
     const { executedQuantity, fills } = orderBook.createOrder(newOrder);
-    log("Order created");
-    log(fills);
-    console.dir(orderBook.getDepth(), {
-      depth: null,
-      colors: true,
-      compact: false,
-      sorted: true,
-    });
 
     // Update the user balances
     this.updateUserBalances(
