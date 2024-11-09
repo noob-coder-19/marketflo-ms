@@ -107,4 +107,11 @@ export class RedisClient {
       Math.random().toString(36).substring(2, 15)
     );
   }
+
+  public async publishToWebsocket(
+    channel: string,
+    message: string,
+  ): Promise<void> {
+    await this.websocketClient.publish(channel, message);
+  }
 }
