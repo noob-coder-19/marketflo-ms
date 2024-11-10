@@ -20,6 +20,7 @@ import { env } from "../environment";
 import { SUPPORTED_QUOTE_ASSETS } from "../types/markets";
 import { getErrorMessage } from "../utils/error";
 import { OrderBook } from "./order-book";
+import { RedisClient } from "../clients/redis";
 
 interface Balance {
   free: number;
@@ -202,6 +203,7 @@ export class Engine {
     }
 
     const orderBook = this.OrderBooks[baseAsset];
+    const market = orderBook.getMarket();
     const asksUpdated: OrderEntryType[] = [];
     const bidsUpdated: OrderEntryType[] = [];
 
@@ -257,6 +259,13 @@ export class Engine {
     // TODO: Publish the updated asks and bids
     log("Asks updated", asksUpdated);
     log("Bids updated", bidsUpdated);
+    await RedisClient.getInstance().publishToWebsocket(
+      `depth:${market}`,
+      JSON.stringify({
+        asks: asksUpdated,
+        bids: bidsUpdated,
+      }),
+    );
   }
 
   private updateUserBalances(
