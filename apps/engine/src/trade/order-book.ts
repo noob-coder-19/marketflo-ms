@@ -32,6 +32,14 @@ export class OrderBook {
     return `${this.baseAsset}_${this.quoteAsset}`;
   }
 
+  public getBidQuantityAtPrice(price: string): string {
+    return this.bids[price] || "0";
+  }
+
+  public getAskQuantityAtPrice(price: string): string {
+    return this.asks[price] || "0";
+  }
+
   private addBid(order: OrderType): void {
     this.bids[order.price] = (
       Number(this.bids[order.price] || 0) + Number(order.quantity)
