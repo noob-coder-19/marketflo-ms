@@ -23,7 +23,8 @@ const main = async (): Promise<void> => {
       if (!request) continue;
 
       const data: MessageFromEngine = JSON.parse(request);
-      const response = engineClient.process(data.message);
+      // eslint-disable-next-line no-await-in-loop -- purposeful
+      const response = await engineClient.process(data.message);
 
       // eslint-disable-next-line no-await-in-loop -- purposeful
       await publisherClient.publish(data.clientId, JSON.stringify(response));

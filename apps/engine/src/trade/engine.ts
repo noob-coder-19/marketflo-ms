@@ -6,6 +6,7 @@ import type {
   GetOpenOrdersMessageToEngine,
   MessageToEngine,
   OnRampMessageToEngine,
+  OrderEntryType,
   OrderType,
   SideType,
 } from "@repo/models";
@@ -61,13 +62,13 @@ export class Engine {
     return market.split("_")[0];
   }
 
-  public process(message: MessageToEngine) {
+  public async process(message: MessageToEngine) {
     // Process the order
     try {
       switch (message.type) {
         case CREATE_ORDER: {
           const messageData = (message as CreateOrderMessageToEngine).data;
-          return this.createOrder(messageData.symbol, {
+          return await this.createOrder(messageData.symbol, {
             side: messageData.side,
             price: messageData.price,
             quantity: messageData.quantity,
@@ -127,7 +128,7 @@ export class Engine {
     }
   }
 
-  private createOrder(
+  private async createOrder(
     market: string,
     order: { side: SideType; price: string; quantity: string; userId: string },
   ) {
@@ -176,6 +177,9 @@ export class Engine {
       order.side,
     );
 
+    // Publish the depth update
+    await this.publishDepthUpdate(baseAsset, order.side, order.price, fills);
+
     return {
       type: "ORDER_PLACED",
       payload: {
@@ -185,6 +189,74 @@ export class Engine {
         userId: order.userId,
       },
     };
+  }
+
+  private async publishDepthUpdate(
+    baseAsset: string,
+    side: SideType,
+    price: string,
+    fills: FillType[],
+  ): Promise<void> {
+    if (fills.length === 0) {
+      return;
+    }
+
+    const orderBook = this.OrderBooks[baseAsset];
+    const asksUpdated: OrderEntryType[] = [];
+    const bidsUpdated: OrderEntryType[] = [];
+
+    /**
+     * Iterate over the fills
+     *
+     * - If the side is buy, get the quantity at the price and add to the asks.
+     * - If the side is sell, get the quantity at the price and add to the bids.
+     *
+     * - If the side is buy, get the quantity at "price" and add to the bids
+     * - If the side is sell, get the quantity at "price" and add to the asks
+     */
+    if (side === "buy") {
+      let prevSellingPrice = fills[0].price;
+      let currSellingPrice = fills[0].price;
+      for (const fill of fills) {
+        currSellingPrice = fill.price;
+        if (currSellingPrice !== prevSellingPrice) {
+          asksUpdated.push([
+            prevSellingPrice,
+            orderBook.getAskQuantityAtPrice(prevSellingPrice),
+          ]);
+
+          prevSellingPrice = currSellingPrice;
+        }
+      }
+
+      bidsUpdated.push([
+        currSellingPrice,
+        orderBook.getBidQuantityAtPrice(currSellingPrice),
+      ]);
+    } else {
+      let prevBuyingPrice = fills[0].price;
+      let currBuyingPrice = fills[0].price;
+      for (const fill of fills) {
+        currBuyingPrice = fill.price;
+        if (currBuyingPrice !== prevBuyingPrice) {
+          bidsUpdated.push([
+            prevBuyingPrice,
+            orderBook.getBidQuantityAtPrice(prevBuyingPrice),
+          ]);
+
+          prevBuyingPrice = currBuyingPrice;
+        }
+      }
+
+      asksUpdated.push([
+        currBuyingPrice,
+        orderBook.getAskQuantityAtPrice(currBuyingPrice),
+      ]);
+    }
+
+    // TODO: Publish the updated asks and bids
+    log("Asks updated", asksUpdated);
+    log("Bids updated", bidsUpdated);
   }
 
   private updateUserBalances(
