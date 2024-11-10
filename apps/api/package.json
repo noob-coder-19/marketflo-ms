@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@repo/logger": "workspace:*",
+    "@repo/models": "workspace:*",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",

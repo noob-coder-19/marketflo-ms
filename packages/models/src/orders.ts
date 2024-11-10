@@ -34,12 +34,12 @@ export const GetDepthRequestSchema = z.object({
 export type GetDepthRequest = z.infer<typeof GetDepthRequestSchema>;
 
 export const SideSchema = z.enum(["buy", "sell"]);
+export type SideType = z.infer<typeof SideSchema>;
 export const OrderSchema = z.object({
   orderId: z.string(),
-  executedQty: z.string(),
-  filled: z.array(z.object({})),
+  quantity: z.number(),
   side: SideSchema,
-  price: z.string(),
+  price: z.number(),
   userId: z.string(),
 });
 export type OrderType = z.infer<typeof OrderSchema>;
