@@ -2,8 +2,8 @@
 import type { RedisClientType } from "redis";
 import { createClient } from "redis";
 import { log } from "@repo/logger";
+import type { MessageToEngine } from "@repo/models";
 import { env } from "../environment";
-import type { MessageToEngine } from "../types/to";
 
 export class RedisClient {
   private client: RedisClientType;
