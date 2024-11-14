@@ -219,12 +219,18 @@ export class Engine {
     if (side === "buy") {
       let prevSellingPrice = fills[0].price;
       let currSellingPrice = fills[0].price;
+
+      asksUpdated.push([
+        currSellingPrice,
+        orderBook.getAskQuantityAtPrice(currSellingPrice),
+      ]);
+
       for (const fill of fills) {
         currSellingPrice = fill.price;
         if (currSellingPrice !== prevSellingPrice) {
           asksUpdated.push([
-            prevSellingPrice,
-            orderBook.getAskQuantityAtPrice(prevSellingPrice),
+            currSellingPrice,
+            orderBook.getAskQuantityAtPrice(currSellingPrice),
           ]);
 
           prevSellingPrice = currSellingPrice;
@@ -238,12 +244,18 @@ export class Engine {
     } else {
       let prevBuyingPrice = fills[0].price;
       let currBuyingPrice = fills[0].price;
+
+      bidsUpdated.push([
+        currBuyingPrice,
+        orderBook.getBidQuantityAtPrice(currBuyingPrice),
+      ]);
+
       for (const fill of fills) {
         currBuyingPrice = fill.price;
         if (currBuyingPrice !== prevBuyingPrice) {
           bidsUpdated.push([
-            prevBuyingPrice,
-            orderBook.getBidQuantityAtPrice(prevBuyingPrice),
+            currBuyingPrice,
+            orderBook.getBidQuantityAtPrice(currBuyingPrice),
           ]);
 
           prevBuyingPrice = currBuyingPrice;
@@ -256,11 +268,10 @@ export class Engine {
       ]);
     }
 
-    // TODO: Publish the updated asks and bids
     log("Asks updated", asksUpdated);
     log("Bids updated", bidsUpdated);
     await RedisClient.getInstance().publishToWebsocket(
-      `depth:${market}`,
+      `depth.${market}`,
       JSON.stringify({
         asks: asksUpdated,
         bids: bidsUpdated,
