@@ -19,8 +19,8 @@ import {
 import { env } from "../environment";
 import { SUPPORTED_QUOTE_ASSETS } from "../types/markets";
 import { getErrorMessage } from "../utils/error";
-import { OrderBook } from "./order-book";
 import { RedisClient } from "../clients/redis";
+import { OrderBook } from "./order-book";
 
 interface Balance {
   free: number;
