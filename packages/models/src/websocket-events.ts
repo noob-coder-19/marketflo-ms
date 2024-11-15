@@ -6,8 +6,8 @@ export const TradeEventSchema = z.object({
   t: z.number(), // trade ID
   p: z.string(),
   q: z.string(),
-  b: z.number(), // buyer order ID
-  a: z.number(), // seller order ID
+  b: z.string(), // buyer order ID
+  a: z.string(), // seller order ID
   T: z.number(), // trade time
 });
 export type TradeEvent = z.infer<typeof TradeEventSchema>;
