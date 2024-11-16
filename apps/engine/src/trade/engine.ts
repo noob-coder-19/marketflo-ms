@@ -9,12 +9,16 @@ import type {
   OrderEntryType,
   OrderType,
   SideType,
+  TradeEvent,
 } from "@repo/models";
 import {
   CREATE_ORDER,
+  DEPTH,
   GET_DEPTH,
   GET_OPEN_ORDERS,
   ON_RAMP,
+  OPEN_ORDERS,
+  RAMP,
 } from "@repo/models";
 import { env } from "../environment";
 import { SUPPORTED_QUOTE_ASSETS } from "../types/markets";
@@ -81,7 +85,7 @@ export class Engine {
           const messageData = (message as GetDepthMessageToEngine).data;
           const baseAsset = Engine.getBaseAsset(messageData.market);
           return {
-            type: "DEPTH",
+            type: DEPTH,
             payload: this.OrderBooks[baseAsset].getDepth(),
           };
         }
@@ -90,7 +94,7 @@ export class Engine {
           const messageData = (message as GetOpenOrdersMessageToEngine).data;
           const baseAsset = Engine.getBaseAsset(messageData.market);
           return {
-            type: "OPEN_ORDERS",
+            type: OPEN_ORDERS,
             payload: this.OrderBooks[baseAsset].getOpenOrders(
               messageData.userId,
             ),
@@ -103,12 +107,12 @@ export class Engine {
           log(this.userBalances);
 
           return {
-            type: "RAMP",
+            type: RAMP,
             payload: {
               userId: messageData.userId,
-              amount: this.userBalances.get(messageData.userId)?.[
-                Engine.quoteAsset
-              ].free,
+              amount:
+                this.userBalances.get(messageData.userId)?.[Engine.quoteAsset]
+                  .free ?? 0,
             },
           };
         }
@@ -180,6 +184,7 @@ export class Engine {
 
     // Publish the depth update
     await this.publishDepthUpdate(baseAsset, order.side, order.price, fills);
+    await this.publishTradeUpdate(baseAsset, fills, order.userId);
 
     return {
       type: "ORDER_PLACED",
@@ -190,6 +195,39 @@ export class Engine {
         userId: order.userId,
       },
     };
+  }
+
+  private async publishTradeUpdate(
+    baseAsset: string,
+    fills: FillType[],
+    userId: string,
+  ): Promise<void> {
+    if (fills.length === 0) {
+      return;
+    }
+
+    const orderBook = this.OrderBooks[baseAsset];
+    const market = orderBook.getMarket();
+    const trades: TradeEvent[] = [];
+    const now = process.hrtime.bigint();
+
+    for (const fill of fills) {
+      trades.push({
+        e: "trade",
+        s: market,
+        t: fill.tradeId,
+        p: fill.price,
+        q: fill.quantity.toString(),
+        b: userId,
+        a: fill.otherUserId,
+        T: Number(now),
+      });
+    }
+
+    await RedisClient.getInstance().publishToWebsocket(
+      `trade.${market}`,
+      JSON.stringify(trades),
+    );
   }
 
   private async publishDepthUpdate(
