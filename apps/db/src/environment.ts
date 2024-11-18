@@ -11,6 +11,7 @@ const EnvironmentConfigurationSchema = z.object({
   PG_DATABASE: z.string().default("marketflo"),
   REDIS_IP: z.string().default("localhost"),
   REDIS_PORT: z.coerce.number().min(1).max(65535).default(6379),
+  MARKET: z.string(),
 });
 
 export type EnvironmentConfiguration = z.infer<

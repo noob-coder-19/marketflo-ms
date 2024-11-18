@@ -1,6 +1,7 @@
 import { log } from "@repo/logger";
 import { SqlClient } from "./clients/sql-client";
 import { RedisClient } from "./clients/redis-client";
+import { env } from "./environment";
 
 const connect = async (): Promise<void> => {
   const p1 = SqlClient.getInstance().connect();
@@ -15,7 +16,7 @@ connect()
     (async () => {
       await RedisClient.getInstance()
         .getClient()
-        .subscribe(["depth.*", "trade.*"], (event) => {
+        .subscribe([`depth.${env.MARKET}`, `trade.${env.MARKET}`], (event) => {
           log(JSON.parse(event));
         });
     })().catch((err) => {
