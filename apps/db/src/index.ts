@@ -16,9 +16,21 @@ connect()
     (async () => {
       await RedisClient.getInstance()
         .getClient()
-        .subscribe([`depth.${env.MARKET}`, `trade.${env.MARKET}`], (event) => {
-          log(JSON.parse(event));
-        });
+        .subscribe(
+          [`depth.${env.MARKET}`, `trade.${env.MARKET}`],
+          async (event) => {
+            const data = JSON.parse(event);
+            log(data);
+
+            if (data?.e === "trade") {
+              await SqlClient.getInstance().addTrade({
+                time: data.T as number,
+                price: data.p as string,
+                volume: data.q as string,
+              });
+            }
+          },
+        );
     })().catch((err) => {
       log(err);
     });
