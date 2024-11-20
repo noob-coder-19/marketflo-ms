@@ -47,12 +47,13 @@ export class SqlClient {
     `);
   }
 
-  public async getLatestKline(): Promise<any> {
+  public async getLatestKline(): Promise<any[]> {
     const query = `
     SELECT * from klines_1h LIMIT 1;
     `;
 
-    return this.client.query(query);
+    const response = await this.client.query(query);
+    return response.rowCount > 0 ? response.rows[0] : [];
   }
 
   public async addTrade({
