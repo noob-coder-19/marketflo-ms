@@ -4,12 +4,14 @@ import { env } from "../environment";
 
 export class RedisClient {
   private client: RedisClientType;
+  private publisherClient: RedisClientType;
   private static instance: RedisClient | null = null;
 
   private constructor() {
     this.client = createClient({
       url: `redis://${env.REDIS_IP}:${env.REDIS_PORT}`,
     });
+    this.publisherClient = this.client.duplicate();
   }
 
   public static getInstance(): RedisClient {
@@ -21,6 +23,11 @@ export class RedisClient {
 
   public async connect(): Promise<void> {
     await this.client.connect();
+    await this.publisherClient.connect();
+  }
+
+  public async publish(channel: string, message: string): Promise<void> {
+    await this.publisherClient.publish(channel, message);
   }
 
   public getClient(): RedisClientType {
