@@ -13,22 +13,6 @@ connect()
   .then(() => {
     log("Connected to database and redis");
 
-    setInterval(() => {
-      (async () => {
-        log("Getting latest kline");
-        const latestKline = await SqlClient.getInstance().getLatestKline();
-        log(latestKline);
-
-        await RedisClient.getInstance().publish(
-          `kline.${env.MARKET}`,
-          JSON.stringify(latestKline),
-        );
-        log("Published latest kline");
-      })().catch((err) => {
-        log(err);
-      });
-    }, 250);
-
     (async () => {
       await RedisClient.getInstance()
         .getClient()
@@ -44,6 +28,13 @@ connect()
                 price: data.p as string,
                 volume: data.q as string,
               });
+
+              const latestKline =
+                await SqlClient.getInstance().getLatestKline();
+              await RedisClient.getInstance().publish(
+                `kline.${env.MARKET}`,
+                JSON.stringify(latestKline),
+              );
             }
           },
         );
