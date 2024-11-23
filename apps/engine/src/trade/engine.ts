@@ -2,6 +2,7 @@ import { log } from "@repo/logger";
 import type {
   CreateOrderMessageToEngine,
   FillType,
+  GetBalanceofUserMessageToEngine,
   GetDepthMessageToEngine,
   GetOpenOrdersMessageToEngine,
   MessageToEngine,
@@ -14,6 +15,7 @@ import type {
 import {
   CREATE_ORDER,
   DEPTH,
+  GET_BALANCE,
   GET_DEPTH,
   GET_OPEN_ORDERS,
   ON_RAMP,
@@ -113,6 +115,16 @@ export class Engine {
               amount:
                 this.userBalances.get(messageData.userId)?.[Engine.quoteAsset]
                   .free ?? 0,
+            },
+          };
+        }
+
+        case GET_BALANCE: {
+          const messageData = (message as GetBalanceofUserMessageToEngine).data;
+          return {
+            type: GET_BALANCE,
+            payload: {
+              balance: this.userBalances.get(messageData.userId),
             },
           };
         }
@@ -472,6 +484,12 @@ export class Engine {
     if (userBalance) {
       userBalance[baseAsset].free += amount;
       this.userBalances.set(userId, userBalance);
+    }
+  }
+
+  public getBalanceOfUser(userId: string): Record<string, Balance> | undefined {
+    if (!this.userBalances.has(userId)) {
+      return this.userBalances.get(userId);
     }
   }
 }
