@@ -225,8 +225,6 @@ export class Engine {
 
     for (const fill of fills) {
       trades.push({
-        e: "trade",
-        s: market,
         t: fill.tradeId,
         p: fill.price,
         q: fill.quantity.toString(),
@@ -238,7 +236,7 @@ export class Engine {
 
     await RedisClient.getInstance().publishToWebsocket(
       `trade.${market}`,
-      JSON.stringify(trades),
+      JSON.stringify({ e: "trade", s: market, payload: trades }),
     );
   }
 
@@ -323,8 +321,12 @@ export class Engine {
     await RedisClient.getInstance().publishToWebsocket(
       `depth.${market}`,
       JSON.stringify({
-        asks: asksUpdated,
-        bids: bidsUpdated,
+        e: "depth",
+        s: market,
+        payload: {
+          a: asksUpdated,
+          b: bidsUpdated,
+        },
       }),
     );
   }
