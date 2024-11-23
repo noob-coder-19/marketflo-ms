@@ -1,8 +1,6 @@
 import { z } from "zod";
 
 export const TradeEventSchema = z.object({
-  e: z.literal("trade"), // Event type
-  s: z.string(), // Symbol
   t: z.number(), // trade ID
   p: z.string(),
   q: z.string(),
