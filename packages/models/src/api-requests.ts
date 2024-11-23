@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   CANCEL_ORDER,
   CREATE_ORDER,
+  GET_BALANCE,
   GET_DEPTH,
   GET_OPEN_ORDERS,
   ON_RAMP,
@@ -11,6 +12,7 @@ import {
   CreateOrderRequestSchema,
   GetDepthRequestSchema,
   GetOpenOrdersRequestSchema,
+  GetUserBalanceRequestSchema,
   OnRampRequestSchema,
 } from "./orders";
 
@@ -52,12 +54,21 @@ export type GetDepthMessageToEngine = z.infer<
   typeof GetDepthMessageToEngineSchema
 >;
 
+export const GetBalanceofUserMessageToEngineSchema = z.object({
+  type: z.literal(GET_BALANCE),
+  data: GetUserBalanceRequestSchema,
+});
+export type GetBalanceofUserMessageToEngine = z.infer<
+  typeof GetBalanceofUserMessageToEngineSchema
+>;
+
 // Types which API sends to the Engine
 export const MessageToEngineSchema = z.union([
   CreateOrderMessageToEngineSchema,
   CancelOrderMessageToEngineSchema,
   GetOpenOrdersMessageToEngineSchema,
   OnRampMessageToEngineSchema,
+  GetBalanceofUserMessageToEngineSchema,
   GetDepthMessageToEngineSchema,
 ]);
 export type MessageToEngine = z.infer<typeof MessageToEngineSchema>;

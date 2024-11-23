@@ -33,6 +33,11 @@ export const GetDepthRequestSchema = z.object({
 });
 export type GetDepthRequest = z.infer<typeof GetDepthRequestSchema>;
 
+export const GetUserBalanceRequestSchema = z.object({
+  userId: z.string(),
+});
+export type GetUserBalanceRequest = z.infer<typeof GetUserBalanceRequestSchema>;
+
 export const SideSchema = z.enum(["buy", "sell"]);
 export type SideType = z.infer<typeof SideSchema>;
 export const OrderSchema = z.object({
