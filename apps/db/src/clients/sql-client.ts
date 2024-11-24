@@ -1,5 +1,6 @@
 import { Client } from "pg";
 import { env } from "../environment";
+import { log } from "@repo/logger";
 
 export class SqlClient {
   private client: Client;
@@ -53,7 +54,8 @@ export class SqlClient {
     `;
 
     const response = await this.client.query(query);
-    return response.rowCount > 0 ? response.rows[0] : [];
+    log(response.rows);
+    return response.rows.length > 0 ? response.rows[0] : [];
   }
 
   public async addTrade({
@@ -69,7 +71,7 @@ export class SqlClient {
 
     const query = `
       INSERT INTO ${tableName} (time, price, volume)
-      VALUES (to_timestamp($1 / 1000.0), $2, $3);
+      VALUES (to_timestamp($1 / 1000000.0), $2, $3);
     `;
 
     await this.client.query(query, [

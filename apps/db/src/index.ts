@@ -23,14 +23,26 @@ connect()
             log(data);
 
             if (data?.e === "trade") {
-              await SqlClient.getInstance().addTrade({
-                time: data.T as number,
-                price: data.p as string,
-                volume: data.q as string,
-              });
+              log(data);
+              const payload = data.payload;
+              const promises = [];
+
+              for (const data of payload) {
+                const promise = SqlClient.getInstance().addTrade({
+                  time: data.T as number,
+                  price: data.p as string,
+                  volume: data.q as string,
+                });
+
+                promises.push(promise);
+              }
+
+              await Promise.all(promises);
 
               const latestKline =
                 await SqlClient.getInstance().getLatestKline();
+              console.log(latestKline);
+
               await RedisClient.getInstance().publish(
                 `kline.${env.MARKET}`,
                 JSON.stringify(latestKline),
