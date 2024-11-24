@@ -27,6 +27,7 @@ import { SUPPORTED_QUOTE_ASSETS } from "../types/markets";
 import { getErrorMessage } from "../utils/error";
 import { RedisClient } from "../clients/redis";
 import { OrderBook } from "./order-book";
+import { now as microTimeNow } from "microtime";
 
 interface Balance {
   free: number;
@@ -221,7 +222,7 @@ export class Engine {
     const orderBook = this.OrderBooks[baseAsset];
     const market = orderBook.getMarket();
     const trades: TradeEvent[] = [];
-    const now = process.hrtime.bigint();
+    const now = microTimeNow();
 
     for (const fill of fills) {
       trades.push({
@@ -230,7 +231,7 @@ export class Engine {
         q: fill.quantity.toString(),
         b: userId,
         a: fill.otherUserId,
-        T: Number(now),
+        T: now,
       });
     }
 

@@ -14,6 +14,7 @@
     "@repo/logger": "workspace:*",
     "@repo/models": "workspace:*",
     "dotenv": "^16.4.7",
+    "microtime": "^3.1.1",
     "redis": "^4.7.0",
     "zod": "^3.24.1",
     "zod-validation-error": "^3.4.0"
@@ -21,6 +22,7 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@types/microtime": "^2.1.2",
     "@types/node": "^20.11.24",
     "@types/redis": "^4.0.11",
     "tsup": "^8.0.2",
