@@ -1,6 +1,6 @@
 import { Client } from "pg";
+import type { KlineEvent, KlineType } from "@repo/models";
 import { env } from "../environment";
-import { log } from "@repo/logger";
 
 export class SqlClient {
   private client: Client;
@@ -35,27 +35,55 @@ export class SqlClient {
       CREATE MATERIALIZED VIEW IF NOT EXISTS klines_1h
       WITH (timescaledb.continuous) AS
         SELECT
-            time_bucket('1 hour', time) AS bucket,
-            first(price, time) AS open,
-            max(price) AS high,
-            min(price) AS low,
-            last(price, time) AS close,
-            sum(volume) AS volume
+            time_bucket('1 hour', time) AS t,
+            first(price, time) AS o,
+            max(price) AS h,
+            min(price) AS l,
+            last(price, time) AS c,
+            sum(volume) AS v
         FROM ${tableName}
-        GROUP BY bucket;
+        GROUP BY t;
       
       ALTER MATERIALIZED VIEW klines_1h set (timescaledb.materialized_only = false);
     `);
+
+    // Create continuous aggregate for ticker
+    await this.client.query(`
+      CREATE MATERIALIZED VIEW IF NOT EXISTS ticker
+      WITH (timescaledb.continuous) AS
+        SELECT
+            time_bucket('6 hour', time) AS t,
+            first(price, time) AS o,
+            max(price) AS h,
+            min(price) AS l,
+            last(price, time) AS c,
+            sum(volume) AS v
+        FROM ${tableName}
+        GROUP BY t;
+      
+      ALTER MATERIALIZED VIEW ticker set (timescaledb.materialized_only = false);
+    `);
   }
 
-  public async getLatestKline(): Promise<any[]> {
+  public async getLatestKline(): Promise<KlineEvent | null> {
     const query = `
     SELECT * from klines_1h LIMIT 1;
     `;
 
     const response = await this.client.query(query);
-    log(response.rows);
-    return response.rows.length > 0 ? response.rows[0] : [];
+    if (response.rows.length === 0) {
+      return null;
+    }
+
+    const kline = response.rows[0] as KlineType;
+
+    const klineResponse: KlineEvent = {
+      e: "kline",
+      s: env.MARKET,
+      k: kline,
+    };
+
+    return klineResponse;
   }
 
   public async addTrade({

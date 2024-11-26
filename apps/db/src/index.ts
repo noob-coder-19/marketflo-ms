@@ -41,7 +41,10 @@ connect()
 
               const latestKline =
                 await SqlClient.getInstance().getLatestKline();
-              console.log(latestKline);
+
+              if (!latestKline) {
+                return;
+              }
 
               await RedisClient.getInstance().publish(
                 `kline.${env.MARKET}`,
