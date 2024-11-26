@@ -18,16 +18,19 @@ export const DepthEventSchema = z.object({
 });
 export type DepthEvent = z.infer<typeof DepthEventSchema>;
 
+export const KlineSchema = z.object({
+  t: z.number(), // Kline time
+  o: z.string(), // Kline open price
+  c: z.string(), // Kline close price
+  h: z.string(), // Kline high price
+  l: z.string(), // Kline low price
+  v: z.string(), // Base asset volume
+});
+export type KlineType = z.infer<typeof KlineSchema>;
+
 export const KlineEventSchema = z.object({
   e: z.literal("kline"), // Event type
   s: z.string(), // Symbol
-  k: z.object({
-    t: z.number(), // Kline close time
-    o: z.string(), // Kline open price
-    c: z.string(), // Kline close price
-    h: z.string(), // Kline high price
-    l: z.string(), // Kline low price
-    v: z.string(), // Base asset volume
-  }),
+  k: KlineSchema,
 });
 export type KlineEvent = z.infer<typeof KlineEventSchema>;
