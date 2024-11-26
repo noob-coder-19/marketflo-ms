@@ -34,3 +34,13 @@ export const KlineEventSchema = z.object({
   k: KlineSchema,
 });
 export type KlineEvent = z.infer<typeof KlineEventSchema>;
+
+export const TickerSchema = z.object({
+  e: z.literal("ticker"),
+  symbol: z.string(),
+  p: z.string(), // current price
+  v: z.string(), // volume
+  c: z.string(), // change
+  q: z.string(), // change percent
+});
+export type TickerType = z.infer<typeof TickerSchema>;
