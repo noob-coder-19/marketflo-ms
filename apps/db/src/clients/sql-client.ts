@@ -1,5 +1,5 @@
 import { Client } from "pg";
-import type { KlineEvent, KlineType } from "@repo/models";
+import type { KlineEvent, KlineType, TickerType } from "@repo/models";
 import { env } from "../environment";
 
 export class SqlClient {
@@ -42,7 +42,8 @@ export class SqlClient {
             last(price, time) AS c,
             sum(volume) AS v
         FROM ${tableName}
-        GROUP BY t;
+        GROUP BY t
+        WITH NO DATA;
       
       ALTER MATERIALIZED VIEW klines_1h set (timescaledb.materialized_only = false);
     `);
@@ -59,7 +60,8 @@ export class SqlClient {
             last(price, time) AS c,
             sum(volume) AS v
         FROM ${tableName}
-        GROUP BY t;
+        GROUP BY t
+        WITH NO DATA;
       
       ALTER MATERIALIZED VIEW ticker set (timescaledb.materialized_only = false);
     `);
@@ -84,6 +86,37 @@ export class SqlClient {
     };
 
     return klineResponse;
+  }
+
+  public async getLatestTicker(): Promise<TickerType | null> {
+    const query = `
+      SELECT * from ticker LIMIT 1;
+    `;
+
+    const response = await this.client.query(query);
+    if (response.rowCount === 0) {
+      return null;
+    }
+
+    const row = response.rows[0] as {
+      t: Date;
+      o: number;
+      h: number;
+      l: number;
+      c: number;
+      v: number;
+    };
+    const change = row.l - row.o;
+    const ticker: TickerType = {
+      e: "ticker",
+      symbol: env.MARKET,
+      p: Number(row.c).toString(),
+      v: Number(row.v).toString(),
+      c: change.toString(),
+      q: ((change * 100.0) / row.o).toString(),
+    };
+
+    return ticker;
   }
 
   public async addTrade({
