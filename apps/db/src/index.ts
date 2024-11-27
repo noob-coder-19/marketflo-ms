@@ -41,14 +41,24 @@ connect()
 
               const latestKline =
                 await SqlClient.getInstance().getLatestKline();
+              const latestTicker =
+                await SqlClient.getInstance().getLatestTicker();
 
               if (!latestKline) {
+                return;
+              }
+
+              if (!latestTicker) {
                 return;
               }
 
               await RedisClient.getInstance().publish(
                 `kline.${env.MARKET}`,
                 JSON.stringify(latestKline),
+              );
+              await RedisClient.getInstance().publish(
+                `ticker.${env.MARKET}`,
+                JSON.stringify(latestTicker),
               );
             }
           },
