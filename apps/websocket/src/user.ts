@@ -25,18 +25,24 @@ export class User {
   private addListeners(): void {
     this.ws.on("message", (message: string) => {
       (async () => {
-        const parsedMessage: IncomingMessage = JSON.parse(message);
+        const parsedMessage = JSON.parse(message) as IncomingMessage;
 
         if (parsedMessage.method === SUBSCRIBE) {
-          await SubscriptionManager.getInstance().subscribeUser(
-            this.id,
-            parsedMessage.params[0],
+          // Subscribe to multiple channels
+          const subscriptionManager = SubscriptionManager.getInstance();
+          await Promise.all(
+            parsedMessage.params.map((channel) =>
+              subscriptionManager.subscribeUser(this.id, channel),
+            ),
           );
         }
         if (parsedMessage.method === UNSUBSCRIBE) {
-          await SubscriptionManager.getInstance().unsubscribeUser(
-            this.id,
-            parsedMessage.params[0],
+          // Unsubscribe from multiple channels
+          const subscriptionManager = SubscriptionManager.getInstance();
+          await Promise.all(
+            parsedMessage.params.map((channel) =>
+              subscriptionManager.unsubscribeUser(this.id, channel),
+            ),
           );
         }
       })().catch((error) => {

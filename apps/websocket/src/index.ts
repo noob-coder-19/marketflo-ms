@@ -4,8 +4,6 @@ import { env } from "./environment";
 import { UserManager } from "./user-manager";
 import { SubscriptionManager } from "./subscription";
 
-console.log(env);
-
 SubscriptionManager.getInstance()
   .connectRedis()
   .then(() => {
