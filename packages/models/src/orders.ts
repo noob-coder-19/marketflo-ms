@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+export const GetTradesRequestSchema = z.object({
+  symbol: z.string(),
+});
+export type GetTradesRequest = z.infer<typeof GetTradesRequestSchema>;
+
 export const CreateOrderRequestSchema = z.object({
   symbol: z.enum(["SOL_USDC"]),
   side: z.enum(["buy", "sell"]),
