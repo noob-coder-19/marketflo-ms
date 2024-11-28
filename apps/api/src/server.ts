@@ -5,6 +5,7 @@ import cors from "cors";
 import OrderRouter from "./routes/orders";
 import { BalanceRouter } from "./routes/balance";
 import { DepthRouter } from "./routes/depth";
+import { TradesRouter } from "./routes/trades";
 
 export const createServer = (): Express => {
   const app = express();
@@ -20,6 +21,7 @@ export const createServer = (): Express => {
     .get("/status", (_, res) => {
       return res.json({ ok: true });
     })
+    .use("/api/v1/trades", TradesRouter)
     .use("/api/v1/orders", OrderRouter)
     .use("/api/v1/balance", BalanceRouter)
     .use("/api/v1/depth", DepthRouter);
