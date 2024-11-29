@@ -5,6 +5,11 @@ export const GetTradesRequestSchema = z.object({
 });
 export type GetTradesRequest = z.infer<typeof GetTradesRequestSchema>;
 
+export const GetKlinesRequestSchema = z.object({
+  symbol: z.string(),
+});
+export type GetKlinesRequest = z.infer<typeof GetKlinesRequestSchema>;
+
 export const CreateOrderRequestSchema = z.object({
   symbol: z.enum(["SOL_USDC"]),
   side: z.enum(["buy", "sell"]),
