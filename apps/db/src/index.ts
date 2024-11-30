@@ -32,6 +32,9 @@ connect()
                   time: data.T as number,
                   price: data.p as string,
                   volume: data.q as string,
+                  tradeId: data.t as number,
+                  buyerUserId: data.b as string,
+                  sellerUserId: data.a as string,
                 });
 
                 promises.push(promise);
