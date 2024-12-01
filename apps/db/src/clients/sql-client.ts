@@ -26,6 +26,7 @@ export class SqlClient {
       CREATE TABLE ${tableName} (
         time TIMESTAMP WITH TIME ZONE NOT NULL,
         trade_id BIGINT NOT NULL,
+        market TEXT NOT NULL,
         buyer_user_id TEXT NOT NULL,
         seller_user_id TEXT NOT NULL,
         price DOUBLE PRECISION,
@@ -140,13 +141,14 @@ export class SqlClient {
     const tableName = `${env.MARKET}_prices`;
 
     const query = `
-      INSERT INTO ${tableName} (time, trade_id, buyer_user_id, seller_user_id, price, volume)
-      VALUES (to_timestamp($1 / 1000000.0), $2, $3, $4, $5, $6);
+      INSERT INTO ${tableName} (time, trade_id, market, buyer_user_id, seller_user_id, price, volume)
+      VALUES (to_timestamp($1 / 1000000.0), $2, $3, $4, $5, $6, $7);
     `;
 
     await this.client.query(query, [
       time,
       tradeId,
+      env.MARKET,
       buyerUserId,
       sellerUserId,
       parseFloat(price),
