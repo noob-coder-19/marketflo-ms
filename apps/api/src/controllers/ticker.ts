@@ -14,7 +14,7 @@ export const getTickerController = (req: Request, res: Response): void => {
       return;
     }
 
-    // const { symbol } = parsedRequest.data;
+    const { symbol } = parsedRequest.data;
     try {
       const pgClient = new Client({
         user: env.PG_USER,
@@ -28,7 +28,29 @@ export const getTickerController = (req: Request, res: Response): void => {
       const response = await pgClient.query(`SELECT * from ticker LIMIT 1;`);
 
       await pgClient.end();
-      return res.send(response.rows);
+
+      if (response.rows.length === 0) {
+        return res.status(200).send({});
+      }
+
+      const row = response.rows[0] as {
+        t: Date;
+        o: number;
+        h: number;
+        l: number;
+        c: number;
+        v: number;
+      };
+      const change = row.l - row.o;
+      const ticker = {
+        t: row.t,
+        p: Number(row.c).toString(),
+        v: Number(row.v).toString(),
+        c: change.toString(),
+        q: ((change * 100.0) / row.o).toString(),
+      };
+
+      return res.send(ticker);
     } catch (error) {
       res.status(500).send(error);
     }
