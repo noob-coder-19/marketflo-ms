@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+export const GetTickerRequestSchema = z.object({
+  symbol: z.string(),
+});
+export type GetTickerRequest = z.infer<typeof GetTickerRequestSchema>;
+
 export const GetTradesRequestSchema = z.object({
   symbol: z.string(),
 });
