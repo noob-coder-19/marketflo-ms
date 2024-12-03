@@ -22,7 +22,7 @@ export const getDepthForMarketController = (
         data: requestData,
       });
 
-      return res.send(response);
+      return res.send(response.payload);
     } catch (err) {
       return res.status(500).send(err);
     }
