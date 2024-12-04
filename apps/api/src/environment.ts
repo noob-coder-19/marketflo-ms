@@ -15,6 +15,7 @@ const EnvironmentConfigurationSchema = z.object({
   PG_HOST: z.string(),
   PG_PORT: z.coerce.number().positive().default(5432),
   PG_DATABASE: z.string().default("marketflo"),
+  MONGO_URI: z.string(),
 });
 
 export type EnvironmentConfiguration = z.infer<
