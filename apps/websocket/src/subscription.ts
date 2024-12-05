@@ -38,7 +38,7 @@ export class SubscriptionManager {
       for (const user of users) {
         const userObj = UserManager.getInstance().getUser(user);
 
-        userObj?.emit(message);
+        userObj?.emit(parsedMessage);
       }
     }
   };
