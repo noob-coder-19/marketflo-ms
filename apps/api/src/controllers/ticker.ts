@@ -14,7 +14,7 @@ export const getTickerController = (req: Request, res: Response): void => {
       return;
     }
 
-    const { symbol } = parsedRequest.data;
+    // const { symbol } = parsedRequest.data;
     try {
       const pgClient = new Client({
         user: env.PG_USER,
@@ -25,7 +25,9 @@ export const getTickerController = (req: Request, res: Response): void => {
       });
 
       await pgClient.connect();
-      const response = await pgClient.query(`SELECT * from ticker LIMIT 1;`);
+      const response = await pgClient.query(
+        `SELECT * from ticker ORDER BY t DESC LIMIT 1;`,
+      );
 
       await pgClient.end();
 
