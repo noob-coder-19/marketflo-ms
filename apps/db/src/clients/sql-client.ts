@@ -94,7 +94,7 @@ export class SqlClient {
 
   public async getLatestTicker(): Promise<TickerType | null> {
     const query = `
-      SELECT * from ticker LIMIT 1;
+      SELECT * from ticker ORDER BY t DESC LIMIT 1;
     `;
 
     const response = await this.client.query(query);
