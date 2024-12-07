@@ -73,7 +73,7 @@ export class SqlClient {
 
   public async getLatestKline(): Promise<KlineEvent | null> {
     const query = `
-    SELECT * from klines_1h LIMIT 1;
+    SELECT * from klines_1h ORDER BY t DESC LIMIT 1;
     `;
 
     const response = await this.client.query(query);
