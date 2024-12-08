@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
 import { fromError } from "zod-validation-error";
+import { hash } from "argon2";
 import { LoginRequestSchema, SignUpRequestSchema } from "../utils/schemas";
 import { UserRepository } from "../repositories/user";
-import { hash } from "argon2";
 
 export const loginController = (req: Request, res: Response): void => {
   (async () => {
@@ -32,6 +32,16 @@ export const registerController = (req: Request, res: Response): void => {
     }
 
     const requestData = parsedRequest.data;
+
+    // Check if user already exists
+    const user = await UserRepository.getInstance().findByEmail(
+      requestData.email,
+    );
+
+    if (user) {
+      res.status(400).send("User already exists");
+      return;
+    }
 
     // timeCost, parallelism and memoryCost configured according to OWASP recommendations: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
     const hashedPass = await hash(requestData.password, {
