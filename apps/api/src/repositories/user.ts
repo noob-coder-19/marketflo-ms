@@ -54,7 +54,7 @@ export class UserRepository {
     }
 
     const user = UserSchema.parse({
-      _id: response._id,
+      _id: response._id.toString(),
       id: response.id as string,
       email: response.email as string,
       password: response.password as string,
