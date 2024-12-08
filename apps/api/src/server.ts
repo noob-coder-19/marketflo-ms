@@ -8,6 +8,7 @@ import { DepthRouter } from "./routes/depth";
 import { TradesRouter } from "./routes/trades";
 import { KlinesRouter } from "./routes/klines";
 import { TickerRouter } from "./routes/ticker";
+import { AuthRouter } from "./routes/auth";
 
 export const createServer = (): Express => {
   const app = express();
@@ -24,6 +25,7 @@ export const createServer = (): Express => {
       return res.json({ ok: true });
     })
     .use("/api/v1/ticker", TickerRouter)
+    .use("/api/v1/auth", AuthRouter)
     .use("/api/v1/trades", TradesRouter)
     .use("/api/v1/klines", KlinesRouter)
     .use("/api/v1/orders", OrderRouter)
