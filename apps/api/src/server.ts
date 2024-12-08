@@ -2,6 +2,7 @@ import { json, urlencoded } from "body-parser";
 import express, { type Express } from "express";
 import morgan from "morgan";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import OrderRouter from "./routes/orders";
 import { BalanceRouter } from "./routes/balance";
 import { DepthRouter } from "./routes/depth";
@@ -14,6 +15,7 @@ export const createServer = (): Express => {
   const app = express();
   app
     .disable("x-powered-by")
+    .use(cookieParser())
     .use(morgan("dev"))
     .use(urlencoded({ extended: true }))
     .use(json())
