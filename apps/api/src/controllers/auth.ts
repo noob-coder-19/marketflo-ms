@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { fromError } from "zod-validation-error";
 import { LoginRequestSchema, SignUpRequestSchema } from "../utils/schemas";
 import { UserRepository } from "../repositories/user";
+import { hash } from "argon2";
 
 export const loginController = (req: Request, res: Response): void => {
   (async () => {
@@ -32,12 +33,16 @@ export const registerController = (req: Request, res: Response): void => {
 
     const requestData = parsedRequest.data;
 
+    // timeCost, parallelism and memoryCost configured according to OWASP recommendations: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+    const hashedPass = await hash(requestData.password, {
+      timeCost: 2,
+      parallelism: 1,
+      memoryCost: 19456, // 19 MiB
+    });
+
     try {
       // Do something with the data
-      await UserRepository.getInstance().create(
-        requestData.email,
-        requestData.password,
-      );
+      await UserRepository.getInstance().create(requestData.email, hashedPass);
 
       res.status(200).send("User registered successfully");
     } catch (error) {
