@@ -77,4 +77,18 @@ export class UserRepository {
       },
     );
   }
+
+  public async deleteToken(token: string): Promise<void> {
+    const collection = Mongo.getInstance().getCollection("users");
+    await collection.updateOne(
+      {
+        token,
+      },
+      {
+        $unset: {
+          token: "",
+        },
+      },
+    );
+  }
 }
