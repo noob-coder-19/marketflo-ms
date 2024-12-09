@@ -1,8 +1,10 @@
 import type { Request, Response } from "express";
 import { fromError } from "zod-validation-error";
-import { hash } from "argon2";
+import { hash, verify } from "argon2";
+import { log } from "@repo/logger";
 import { LoginRequestSchema, SignUpRequestSchema } from "../utils/schemas";
 import { UserRepository } from "../repositories/user";
+import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 
 export const loginController = (req: Request, res: Response): void => {
   (async () => {
@@ -15,8 +17,39 @@ export const loginController = (req: Request, res: Response): void => {
     }
 
     const requestData = parsedRequest.data;
+
+    // Check if user exists
+    const user = await UserRepository.getInstance().findByEmail(
+      requestData.email,
+    );
+
+    if (!user) {
+      res.status(400).send("Invalid credentials");
+      return;
+    }
+
+    // Verify password
+    const valid = await verify(user.password, requestData.password);
+
+    if (!valid) {
+      res.status(400).send("Invalid credentials");
+      return;
+    }
+
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
+
+    await UserRepository.getInstance().updateToken(user.email, refreshToken);
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+
+    res.status(200).send({ accessToken });
   })().catch((error) => {
-    console.error(error);
+    log(error);
     res.status(500).send("An error occurred");
   });
 };
