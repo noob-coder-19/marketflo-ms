@@ -4,7 +4,11 @@ import { hash, verify } from "argon2";
 import { log } from "@repo/logger";
 import { LoginRequestSchema, SignUpRequestSchema } from "../utils/schemas";
 import { UserRepository } from "../repositories/user";
-import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyToken,
+} from "../utils/jwt";
 
 export const loginController = (req: Request, res: Response): void => {
   (async () => {
@@ -109,6 +113,37 @@ export const logoutController = (req: Request, res: Response): void => {
 
     res.clearCookie("refreshToken");
     res.status(200).send("Logged out successfully");
+  })().catch((error) => {
+    res.status(500).send(error);
+  });
+};
+
+export const refreshController = (req: Request, res: Response): void => {
+  (async () => {
+    const refreshToken = req.cookies.refreshToken as string;
+
+    if (!refreshToken) {
+      res.status(400).send("No refresh token provided");
+      return;
+    }
+
+    const decoded = verifyToken(refreshToken) as { userId: string } | null;
+    if (!decoded) {
+      res.status(400).send("Invalid refresh token");
+      return;
+    }
+
+    const decodedUserId = decoded.userId;
+    const user = await UserRepository.getInstance().findById(decodedUserId);
+
+    if (!user) {
+      res.status(400).send("Invalid refresh token");
+      return;
+    }
+
+    const accessToken = generateAccessToken(user.id);
+
+    res.status(200).send({ accessToken });
   })().catch((error) => {
     res.status(500).send(error);
   });

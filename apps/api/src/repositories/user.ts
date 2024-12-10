@@ -64,6 +64,27 @@ export class UserRepository {
     return user;
   }
 
+  public async findById(id: string): Promise<User | null> {
+    const collection = Mongo.getInstance().getCollection("users");
+    const response = await collection.findOne({
+      id,
+    });
+
+    if (!response) {
+      return null;
+    }
+
+    const user = UserSchema.parse({
+      _id: response._id.toString(),
+      id: response.id as string,
+      email: response.email as string,
+      password: response.password as string,
+      token: response.token as string,
+    });
+
+    return user;
+  }
+
   public async updateToken(email: string, token: string): Promise<void> {
     const collection = Mongo.getInstance().getCollection("users");
     await collection.updateOne(
