@@ -95,3 +95,21 @@ export const registerController = (req: Request, res: Response): void => {
     res.status(500).send(error);
   });
 };
+
+export const logoutController = (req: Request, res: Response): void => {
+  (async () => {
+    const refreshToken = req.cookies.refreshToken as string;
+
+    if (!refreshToken) {
+      res.status(400).send("No refresh token provided");
+      return;
+    }
+
+    await UserRepository.getInstance().deleteToken(refreshToken);
+
+    res.clearCookie("refreshToken");
+    res.status(200).send("Logged out successfully");
+  })().catch((error) => {
+    res.status(500).send(error);
+  });
+};
