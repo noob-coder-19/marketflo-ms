@@ -10,6 +10,7 @@ import { TradesRouter } from "./routes/trades";
 import { KlinesRouter } from "./routes/klines";
 import { TickerRouter } from "./routes/ticker";
 import { AuthRouter } from "./routes/auth";
+import corsOptions from "./config/cors-options";
 
 export const createServer = (): Express => {
   const app = express();
@@ -19,7 +20,7 @@ export const createServer = (): Express => {
     .use(morgan("dev"))
     .use(urlencoded({ extended: true }))
     .use(json())
-    .use(cors())
+    .use(cors(corsOptions))
     .get("/message/:name", (req, res) => {
       return res.json({ message: `hello ${req.params.name}` });
     })
