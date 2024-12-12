@@ -5,6 +5,7 @@ import "dotenv/config";
 const EnvironmentConfigurationSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]),
   PORT: z.coerce.number().positive().default(4000),
+  SUPER_ADMIN_KEY: z.string(),
   JWT_SECRET: z.string(),
   REDIS_ORDERBOOK_IP: z.string(),
   REDIS_ORDERBOOK_PORT: z.coerce.number().min(1).max(65535),
