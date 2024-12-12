@@ -7,7 +7,7 @@ const corsOptions: CorsOptions = {
 
     const isInEnvOrigins = ENV_ORIGINS.includes(origin || "");
 
-    if (isInEnvOrigins) {
+    if (origin === undefined || isInEnvOrigins) {
       callback(null, true);
     } else {
       const error = new Error("Not allowed by CORS");
