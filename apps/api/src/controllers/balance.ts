@@ -7,6 +7,7 @@ import {
 import type { Request, Response } from "express";
 import { fromError } from "zod-validation-error";
 import { RedisClient } from "../clients/redis";
+import type { ProtectedRequest } from "../utils/interfaces";
 
 export const onRampController = (req: Request, res: Response): void => {
   (async () => {
@@ -18,6 +19,12 @@ export const onRampController = (req: Request, res: Response): void => {
     }
 
     const requestData = parsedRequest.data;
+    const userId = (req as ProtectedRequest).userId;
+    if (userId !== "*" && userId !== requestData.userId) {
+      res.status(401).send("Wrong user");
+      return;
+    }
+
     try {
       const response = await RedisClient.getInstance().sendAndAwait({
         type: ON_RAMP,
@@ -44,6 +51,12 @@ export const getBalanceController = (req: Request, res: Response): void => {
     }
 
     const requestData = parsedRequest.data;
+    const userId = (req as ProtectedRequest).userId;
+    if (userId !== "*" && userId !== requestData.userId) {
+      res.status(401).send("Wrong user");
+      return;
+    }
+
     try {
       const response = await RedisClient.getInstance().sendAndAwait({
         type: GET_BALANCE,
