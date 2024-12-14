@@ -31,7 +31,7 @@ export const onRampController = (req: Request, res: Response): void => {
         data: requestData,
       });
 
-      return res.send(response);
+      return res.send(response.payload);
     } catch (err) {
       return res.status(500).send(err);
     }
@@ -65,7 +65,7 @@ export const getBalanceController = (req: Request, res: Response): void => {
         },
       });
 
-      res.send(response);
+      res.send(response.payload);
     } catch (error) {
       return res.status(500).send(error);
     }
