@@ -51,7 +51,7 @@ export const loginController = (req: Request, res: Response): void => {
       secure: true,
     });
 
-    res.status(200).send({ accessToken });
+    res.status(200).send({ accessToken, userId: user.id });
   })().catch((error) => {
     log(error);
     res.status(500).send("An error occurred");
@@ -143,7 +143,7 @@ export const refreshController = (req: Request, res: Response): void => {
 
     const accessToken = generateAccessToken(user.id);
 
-    res.status(200).send({ accessToken });
+    res.status(200).send({ accessToken, userId: user.id });
   })().catch((error) => {
     res.status(500).send(error);
   });
