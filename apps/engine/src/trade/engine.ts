@@ -61,6 +61,66 @@ export class Engine {
         locked: 0,
       },
     });
+    this.userBalances.set("3", {
+      [Engine.quoteAsset]: {
+        free: 99999999999,
+        locked: 0,
+      },
+      SOL: {
+        free: 100000,
+        locked: 0,
+      },
+    });
+    this.userBalances.set("4", {
+      [Engine.quoteAsset]: {
+        free: 9999999999999,
+        locked: 0,
+      },
+      SOL: {
+        free: 100000,
+        locked: 0,
+      },
+    });
+    this.userBalances.set("5", {
+      [Engine.quoteAsset]: {
+        free: 99999999999,
+        locked: 0,
+      },
+      SOL: {
+        free: 100000,
+        locked: 0,
+      },
+    });
+    this.userBalances.set("6", {
+      [Engine.quoteAsset]: {
+        free: 9999999999999,
+        locked: 0,
+      },
+      SOL: {
+        free: 10000000,
+        locked: 0,
+      },
+    });
+    this.userBalances.set("7", {
+      [Engine.quoteAsset]: {
+        free: 99999999999,
+        locked: 0,
+      },
+      SOL: {
+        free: 100000,
+        locked: 0,
+      },
+    });
+    this.userBalances.set("8", {
+      [Engine.quoteAsset]: {
+        free: 9999999999999,
+        locked: 0,
+      },
+      SOL: {
+        free: 100000,
+        locked: 0,
+      },
+    });
     this.OrderBooks = {
       SOL: new OrderBook("SOL"),
     };
