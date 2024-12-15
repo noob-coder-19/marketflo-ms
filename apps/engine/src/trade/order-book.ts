@@ -241,7 +241,7 @@ export class OrderBook {
     }
 
     // sort the bids and asks
-    bidsDepth.sort((a, b) => Number(b[0]) - Number(a[0])); // Descending order
+    bidsDepth.sort((a, b) => Number(a[0]) - Number(b[0])); // Descending order
     asksDepth.sort((a, b) => Number(a[0]) - Number(b[0])); // Ascending order
 
     return {
