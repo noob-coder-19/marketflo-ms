@@ -307,14 +307,32 @@ export class Engine {
     price: string,
     fills: FillType[],
   ): Promise<void> {
-    if (fills.length === 0) {
-      return;
-    }
-
     const orderBook = this.OrderBooks[baseAsset];
     const market = orderBook.getMarket();
     const asksUpdated: OrderEntryType[] = [];
     const bidsUpdated: OrderEntryType[] = [];
+
+    if (fills.length === 0) {
+      if (side === "buy") {
+        bidsUpdated.push([price, orderBook.getBidQuantityAtPrice(price)]);
+      } else {
+        asksUpdated.push([price, orderBook.getAskQuantityAtPrice(price)]);
+      }
+
+      await RedisClient.getInstance().publishToWebsocket(
+        `depth.${market}`,
+        JSON.stringify({
+          e: "depth",
+          s: market,
+          payload: {
+            a: asksUpdated,
+            b: bidsUpdated,
+          },
+        }),
+      );
+
+      return;
+    }
 
     /**
      * Iterate over the fills
