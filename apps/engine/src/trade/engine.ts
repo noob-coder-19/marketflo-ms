@@ -1,5 +1,6 @@
 import { log } from "@repo/logger";
 import type {
+  CancelOrderMessageToEngine,
   CreateOrderMessageToEngine,
   FillType,
   GetBalanceofUserMessageToEngine,
@@ -13,6 +14,7 @@ import type {
   TradeEvent,
 } from "@repo/models";
 import {
+  CANCEL_ORDER,
   CREATE_ORDER,
   DEPTH,
   GET_BALANCE,
@@ -22,12 +24,12 @@ import {
   OPEN_ORDERS,
   RAMP,
 } from "@repo/models";
+import { now as microTimeNow } from "microtime";
 import { env } from "../environment";
 import { SUPPORTED_QUOTE_ASSETS } from "../types/markets";
 import { getErrorMessage } from "../utils/error";
 import { RedisClient } from "../clients/redis";
 import { OrderBook } from "./order-book";
-import { now as microTimeNow } from "microtime";
 
 interface Balance {
   free: number;
@@ -164,6 +166,19 @@ export class Engine {
           };
         }
 
+        case CANCEL_ORDER: {
+          const messageData = (message as CancelOrderMessageToEngine).data;
+          const price = await this.cancelOrder(
+            messageData.market,
+            messageData.orderId,
+          );
+
+          return {
+            type: CANCEL_ORDER,
+            payload: price,
+          };
+        }
+
         case ON_RAMP: {
           const messageData = (message as OnRampMessageToEngine).data;
           this.onRamp(messageData.userId, Number(messageData.amount));
@@ -204,6 +219,36 @@ export class Engine {
         },
       };
     }
+  }
+
+  private async cancelOrder(market: string, orderId: string): Promise<string> {
+    const baseAsset = Engine.getBaseAsset(market);
+    const orderBook = this.OrderBooks[baseAsset];
+    const { price, side } = orderBook.cancelOrder(orderId);
+
+    // Publish the updated depth at the depth
+    const asksUpdated: OrderEntryType[] = [];
+    const bidsUpdated: OrderEntryType[] = [];
+
+    if (side === "bid") {
+      bidsUpdated.push([price, orderBook.getBidQuantityAtPrice(price)]);
+    } else {
+      asksUpdated.push([price, orderBook.getAskQuantityAtPrice(price)]);
+    }
+
+    await RedisClient.getInstance().publishToWebsocket(
+      `depth.${market}`,
+      JSON.stringify({
+        e: "depth",
+        s: market,
+        payload: {
+          a: asksUpdated,
+          b: bidsUpdated,
+        },
+      }),
+    );
+
+    return price;
   }
 
   private async createOrder(

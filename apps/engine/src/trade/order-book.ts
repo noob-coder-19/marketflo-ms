@@ -277,6 +277,62 @@ export class OrderBook {
     };
   }
 
+  cancelOrder(orderId: string): {
+    price: string;
+    side: "bid" | "ask";
+  } {
+    const indexAsk = this.asksOfUser.findIndex(
+      (order) => order.orderId === orderId,
+    );
+
+    const indexBid = this.bidsOfUser.findIndex(
+      (order) => order.orderId === orderId,
+    );
+
+    const response = {
+      price: "",
+      side: "bid" as "bid" | "ask",
+    };
+
+    if (indexAsk !== -1) {
+      const { price, quantity } = this.asksOfUser[indexAsk];
+      this.asks[price] = (
+        Number(this.asks[price]) - Number(quantity)
+      ).toString();
+
+      if (this.asks[price] === "0") {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- purposeful
+        delete this.asks[price];
+      }
+
+      this.asksOfUser.splice(indexAsk, 1);
+
+      response.price = price.toString();
+      response.side = "ask";
+
+      return response;
+    } else if (indexBid !== -1) {
+      const { price, quantity } = this.bidsOfUser[indexBid];
+      this.bids[price] = (
+        Number(this.bids[price]) - Number(quantity)
+      ).toString();
+
+      if (this.bids[price] === "0") {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- purposeful
+        delete this.bids[price];
+      }
+
+      this.bidsOfUser.splice(indexBid, 1);
+
+      response.price = price.toString();
+      response.side = "bid";
+
+      return response;
+    }
+
+    throw new Error("Order not found");
+  }
+
   cancelBid(orderId: string): string {
     const index = this.bidsOfUser.findIndex(
       (order) => order.orderId === orderId,
