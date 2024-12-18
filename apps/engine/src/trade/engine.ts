@@ -48,7 +48,7 @@ export class Engine {
         free: 1000,
         locked: 0,
       },
-      SOL: {
+      NVB: {
         free: 2,
         locked: 0,
       },
@@ -58,7 +58,7 @@ export class Engine {
         free: 1000,
         locked: 0,
       },
-      SOL: {
+      NVB: {
         free: 100000,
         locked: 0,
       },
@@ -68,7 +68,7 @@ export class Engine {
         free: 99999999999,
         locked: 0,
       },
-      SOL: {
+      NVB: {
         free: 100000,
         locked: 0,
       },
@@ -78,7 +78,7 @@ export class Engine {
         free: 9999999999999,
         locked: 0,
       },
-      SOL: {
+      NVB: {
         free: 100000,
         locked: 0,
       },
@@ -88,7 +88,7 @@ export class Engine {
         free: 99999999999,
         locked: 0,
       },
-      SOL: {
+      NVB: {
         free: 100000,
         locked: 0,
       },
@@ -98,7 +98,7 @@ export class Engine {
         free: 9999999999999,
         locked: 0,
       },
-      SOL: {
+      NVB: {
         free: 10000000,
         locked: 0,
       },
@@ -108,7 +108,7 @@ export class Engine {
         free: 99999999999,
         locked: 0,
       },
-      SOL: {
+      NVB: {
         free: 100000,
         locked: 0,
       },
@@ -118,13 +118,13 @@ export class Engine {
         free: 9999999999999,
         locked: 0,
       },
-      SOL: {
+      NVB: {
         free: 100000,
         locked: 0,
       },
     });
     this.OrderBooks = {
-      SOL: new OrderBook("SOL"),
+      NVB: new OrderBook("NVB"),
     };
   }
 
@@ -514,7 +514,7 @@ export class Engine {
     userId: string,
     price: string,
     quantity: string,
-    baseAsset = "SOL",
+    baseAsset = "NVB",
   ): void {
     const totalPrice = Number(price) * Number(quantity);
     const userQuoteBalance = this.userBalances.get(userId)?.[Engine.quoteAsset];
@@ -595,7 +595,7 @@ export class Engine {
   private onRampBaseAsset(
     userId: string,
     amount: number,
-    baseAsset = "SOL",
+    baseAsset = "NVB",
   ): void {
     if (!this.userBalances.has(userId)) {
       this.initialiseBalanceForUserForAsset(userId, baseAsset);
