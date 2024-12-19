@@ -93,6 +93,9 @@ importers:
       '@types/redis':
         specifier: ^4.0.11
         version: 4.0.11
+      '@vercel/ncc':
+        specifier: ^0.38.3
+        version: 0.38.3
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
@@ -142,6 +145,9 @@ importers:
       '@types/redis':
         specifier: ^4.0.11
         version: 4.0.11
+      '@vercel/ncc':
+        specifier: ^0.38.3
+        version: 0.38.3
       tsup:
         specifier: ^8.0.2
         version: 8.3.5(typescript@5.5.4)(yaml@2.6.1)
@@ -188,6 +194,9 @@ importers:
       '@types/redis':
         specifier: ^4.0.11
         version: 4.0.11
+      '@vercel/ncc':
+        specifier: ^0.38.3
+        version: 0.38.3
       tsup:
         specifier: ^8.0.2
         version: 8.3.5(typescript@5.5.4)(yaml@2.6.1)
@@ -234,6 +243,9 @@ importers:
       '@types/ws':
         specifier: ^8.5.13
         version: 8.5.13
+      '@vercel/ncc':
+        specifier: ^0.38.3
+        version: 0.38.3
       tsup:
         specifier: ^8.0.2
         version: 8.3.5(typescript@5.5.4)(yaml@2.6.1)
@@ -978,6 +990,10 @@ packages:
 
   '@ungap/structured-clone@1.2.1':
     resolution: {integrity: sha512-fEzPV3hSkSMltkw152tJKNARhOupqbH96MZWyRjNaYZOMIzbrTeQDG+MTc6Mr2pgzFQzFxAfmhGDNP5QK++2ZA==}
+
+  '@vercel/ncc@0.38.3':
+    resolution: {integrity: sha512-rnK6hJBS6mwc+Bkab+PGPs9OiS0i/3kdTO+CkI8V0/VrW3vmz7O2Pxjw/owOlmo6PKEIxRSeZKv/kuL9itnpYA==}
+    hasBin: true
 
   '@vercel/style-guide@5.2.0':
     resolution: {integrity: sha512-fNSKEaZvSkiBoF6XEefs8CcgAV9K9e+MbcsDZjUsktHycKdA0jvjAzQi1W/FzLS+Nr5zZ6oejCwq/97dHUKe0g==}
@@ -4182,6 +4198,8 @@ snapshots:
       eslint-visitor-keys: 3.4.3
 
   '@ungap/structured-clone@1.2.1': {}
+
+  '@vercel/ncc@0.38.3': {}
 
   '@vercel/style-guide@5.2.0(eslint@8.57.1)(prettier@3.4.2)(typescript@5.5.4)':
     dependencies:
