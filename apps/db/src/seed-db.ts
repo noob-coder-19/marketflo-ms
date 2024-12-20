@@ -4,7 +4,7 @@ import { SqlClient } from "./clients/sql-client";
 (async () => {
   const sqlClient = SqlClient.getInstance();
 
-  await sqlClient.init("SOL_USDC");
+  await sqlClient.init("NVB_INR");
 
   await sqlClient.disconnect();
 })()

@@ -35,7 +35,7 @@ export const GetKlinesRequestSchema = z.object({
 export type GetKlinesRequest = z.infer<typeof GetKlinesRequestSchema>;
 
 export const CreateOrderRequestSchema = z.object({
-  symbol: z.enum(["SOL_USDC"]),
+  symbol: z.enum(["NVB_INR"]),
   side: z.enum(["buy", "sell"]),
   quantity: z.string(),
   price: z.string(),

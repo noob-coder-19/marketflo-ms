@@ -57,7 +57,7 @@ export class SqlClient {
       CREATE MATERIALIZED VIEW IF NOT EXISTS ticker
       WITH (timescaledb.continuous) AS
         SELECT
-            time_bucket('6 hour', time) AS t,
+            time_bucket('1 day', time) AS t,
             first(price, time) AS o,
             max(price) AS h,
             min(price) AS l,
