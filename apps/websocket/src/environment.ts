@@ -8,6 +8,15 @@ const EnvironmentConfigurationSchema = z.object({
   REDIS_ORDERBOOK_WEBSOCKET_PORT: z.coerce.number().min(1).max(65535),
   PORT: z.coerce.number().min(1).max(65535),
   BASE_CURRENCY: z.string(),
+  SSL: z
+    .string()
+    .default("0")
+    .refine((val) => val === "1" || val === "0", {
+      message: "String must be '1' or '0'",
+    })
+    .transform((val) => val === "1"),
+  SSL_KEY_FILE: z.string().optional(),
+  SSL_CERT_FILE: z.string().optional(),
 });
 
 export type EnvironmentConfiguration = z.infer<
