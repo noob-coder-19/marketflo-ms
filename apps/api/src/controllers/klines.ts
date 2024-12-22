@@ -27,11 +27,11 @@ export const getKlinesController = (req: Request, res: Response): void => {
 
       await pgClient.connect();
 
-      const startTime = requestData.startTime.toISOString();
-      const endTime = requestData.endTime.toISOString();
+      const startTime = requestData.startTime.getTime();
+      const endTime = requestData.endTime.getTime();
 
       const response = await pgClient.query(
-        `SELECT * from klines_1h WHERE t >= $1 AND t < $2;`,
+        `SELECT * from klines_1h WHERE t >= to_timestamp($1 / 1000.0) AND t < to_timestamp($2 / 1000.0);`,
         [startTime, endTime],
       );
 
