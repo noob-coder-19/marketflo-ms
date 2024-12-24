@@ -13,3 +13,5 @@ server/dist
 public/dist
 bruno-collections
 build/
+*.service
+compose.yml
